@@ -2,11 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator'
 
 /**
- * DTO для входу користувача в систему.
+ * DTO for user login.
  */
 export class LoginDto {
 	/**
-	 * Email користувача.
+	 * User email.
 	 * @example example@kpefk.com.ua
 	 */
 	@ApiProperty({ description: 'Email користувача', example: 'my@kpefk.com.ua' })
@@ -16,7 +16,7 @@ export class LoginDto {
 	email?: string
 
 	/**
-	 * Пароль користувача.
+	 * User password.
 	 * @example password123
 	 */
 	@ApiProperty({ description: 'Пароль користувача', example: 'password123' })
@@ -26,7 +26,7 @@ export class LoginDto {
 	password?: string
 
 	/**
-	 * Код двохфакторної аутентифікації (необов'язково).
+	 * Two-factor authentication code (optional).
 	 * @example 123456
 	 */
 	@ApiPropertyOptional({ description: 'Код двохфакторної аутентифікації', example: '123456' })

@@ -2,15 +2,15 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 import { User } from '@prisma/client'
 
 /**
- * Декоратор для отримання авторизованого користувача з контексту запиту.
+ * Decorator for getting the authenticated user from the request context.
  *
- * Цей декоратор дозволяє витягувати дані користувача з об'єкта запиту.
- * Якщо вказано параметр, повертає конкретне властивість користувача,
- * інакше повертає весь об'єкт користувача.
+ * This decorator allows you to extract user data from the request object.
+ * If a parameter is specified, it returns a specific user property;
+ * otherwise, it returns the entire user object.
  *
- * @param data - Ім'я властивості користувача, яке потрібно витягти.
- * @param ctx - Контекст виконання, що містить інформацію про поточний запит.
- * @returns Значення властивості користувача або весь об'єкт користувача.
+ * @param data - Name of the user property to extract.
+ * @param ctx - Execution context containing information about the current request.
+ * @returns Value of the user property or the entire user object.
  */
 export const Authorized = createParamDecorator(
 	(data: keyof User, ctx: ExecutionContext) => {

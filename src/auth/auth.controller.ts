@@ -14,6 +14,7 @@ import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto/login.dto'
 import { UserEntity } from '@/user/entities/user.entity'
+import { RegisterStudentDto } from './dto/register-student.dto'
 
 /**
  * Контролер для автентифікації користувачів.
@@ -46,6 +47,12 @@ export class AuthController {
   public async login(@Req() req: Request, @Body() dto: LoginDto) {
     return this.authService.login(req, dto)
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('register')
+  public async register(@Req() req: Request, @Body() dto: RegisterStudentDto) {
+    return this.authService.register_student(req, dto)
+  } 
 
   /**
    * Завершує сесію поточного користувача.

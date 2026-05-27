@@ -15,15 +15,15 @@ import { NewPasswordDto } from './dto/new-password.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
 
 /**
- * Сервіс для управління відновленням паролю.
+ * Service for managing password recovery.
  */
 @Injectable()
 export class PasswordRecoveryService {
   /**
-   * Конструктор сервісу відновлення паролю.
-   * @param prismaService - Сервіс для роботи з базою даних Prisma.
-   * @param userService - Сервіс для роботи з користувачами.
-   * @param mailService - Сервіс для відправки email-повідомлень.
+   * Constructor of the password recovery service.
+   * @param prismaService - The Prisma service for database operations.
+   * @param userService - The user service for user operations.
+   * @param mailService - The mail service for sending email notifications.
    */
   public constructor(
     private readonly prismaService: PrismaService,
@@ -32,10 +32,10 @@ export class PasswordRecoveryService {
   ) {}
 
   /**
-   * Запрошує скидання пароля та відправляє токен на вказаний Email.
-   * @param dto - DTO з адресом електронної пошти користувача.
-   * @returns true, якщо токен успішно відправлено.
-   * @throws NotFoundException - Якщо користувач не знайдений.
+   * Requests password reset and sends a token to the specified email.
+   * @param dto - DTO with the user's email address.
+   * @returns true if the token was sent successfully.
+   * @throws NotFoundException if the user is not found.
    */
   public async reset(dto: ResetPasswordDto) {
     const user = await this.userService.findByEmail(dto.email!)
@@ -57,12 +57,12 @@ export class PasswordRecoveryService {
   }
 
   /**
-   * Встановлює новий пароль для користувача.
-   * @param dto - DTO з новим паролем.
-   * @param token - Токен для скидання паролю.
-   * @returns true, якщо пароль успішно змінено.
-   * @throws NotFoundException - Якщо токен або користувач не знайдений.
-   * @throws BadRequestException - Якщо токен застарів.
+   * Sets a new password for the user.
+   * @param dto - DTO with the new password.
+   * @param token - The password reset token.
+   * @returns true if the password was changed successfully.
+   * @throws NotFoundException if the token or user is not found.
+   * @throws BadRequestException if the token has expired.
    */
   public async new(dto: NewPasswordDto, token: string) {
     const existingToken = await this.prismaService.token.findFirst({
@@ -97,13 +97,13 @@ export class PasswordRecoveryService {
   }
 
   /**
-   * Генерує токен для скидання паролю.
-   * @param userId - ID користувача.
-   * @returns Об'єкт токена скидання паролю.
+   * Generates a password reset token.
+   * @param userId - The user ID.
+   * @returns The password reset token object.
    */
   private async generatePasswordResetToken(userId: string) {
     const token = uuidv4()
-    const expiresIn = new Date(Date.now() + 3600 * 1000) // 1 година
+    const expiresIn = new Date(Date.now() + 3600 * 1000) // 1 hour
 
     const existingToken = await this.prismaService.token.findFirst({
       where: {

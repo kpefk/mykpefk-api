@@ -1,18 +1,18 @@
 import { ConfigService } from '@nestjs/config'
 import * as dotenv from 'dotenv'
 
-// Завантажує змінні середовища з файлу .env
+// Loads environment variables from .env file
 dotenv.config()
 
 /**
- * Перевіряє, чи знаходиться додаток в режимі розробки.
- * @param configService - Сервіс конфігурації.
- * @returns true, якщо режим розробки; інакше false.
+ * Checks if the application is in development mode.
+ * @param configService - Configuration service.
+ * @returns true if in development mode; otherwise false.
  */
 export const isDev = (configService: ConfigService): boolean =>
 	configService.getOrThrow('NODE_ENV') === 'development'
 
 /**
- * Визначає, чи працює додаток в режимі розробки.
+ * Determines if the application is running in development mode.
  */
 export const IS_DEV_ENV = process.env.NODE_ENV === 'development'

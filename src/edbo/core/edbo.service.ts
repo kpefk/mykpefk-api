@@ -68,8 +68,8 @@ export class EdboService {
       grant_type: 'password',
       username: this.userLogin,
       password: this.userPassword,
-      app_key: encodeURIComponent(this.appKey), // ApplicationKey має бути URLEncoded
-    }).toString();
+      app_key: this.appKey,
+    }).toString()
 
     const response = await fetch(`${this.baseUrl}/oauth/token`, {
       method: 'POST',
@@ -77,19 +77,23 @@ export class EdboService {
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
       },
       body,
-    });
+    })
 
-    const data = await response.json();
+    // ✅ Читаємо як текст — не падає на HTML
+    const text = await response.text()
+
+    // Діагностичний лог — видали після вирішення проблеми
+    this.logger.debug(`ЄДЕБО /oauth/token [${response.status}]: ${text.slice(0, 300)}`)
 
     if (!response.ok) {
-      this.logger.error('ЄДЕБО auth failed', data);
+      this.logger.error(`ЄДЕБО auth failed [${response.status}]:`, text.slice(0, 300))
       throw new HttpException(
-        data?.error ?? 'ЄДЕБО authentication failed',
+        'ЄДЕБО authentication failed',
         response.status,
-      );
+      )
     }
 
-    return data as EdboTokenResponse;
+    return this.parseJson(text, '/oauth/token') as EdboTokenResponse
   }
 
   /**
@@ -116,44 +120,72 @@ export class EdboService {
     return this.doPost<T>(path, body, false);
   }
 
-private async doPost<T>(
-  path: string,
-  body: unknown,
-  isRetry: boolean,
-): Promise<T> {
-  const token = await this.getAccessToken();
+  private async doPost<T>(
+    path: string,
+    body: unknown,
+    isRetry: boolean,
+  ): Promise<T> {
+    const token = await this.getAccessToken()
 
-  const response = await fetch(`${this.baseUrl}${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    })
 
-  const data = await response.json();
+    // ✅ Спочатку читаємо як текст — не падає на HTML
+    const text = await response.text()
 
-  // ── Розпізнавання протухлого токена ─────────────────────────────
-  const isTokenExpired =
-    response.status === HttpStatus.UNAUTHORIZED ||
-    (data as any)?.message === EdboService.DENIED_MESSAGE;
+    // Тимчасовий лог для діагностики — прибери після вирішення проблеми
+    if (!response.ok || text.trimStart().startsWith('<')) {
+      this.logger.warn(
+        `ЄДЕБО raw response [${response.status}] ${path}: ${text.slice(0, 300)}`
+      )
+    }
 
-  if (isTokenExpired && !isRetry) {
-    this.logger.warn('ЄДЕБО токен протух — оновлення і повтор запиту');
-    this.invalidateToken();
-    return this.doPost<T>(path, body, true);
+    // ✅ Обробляємо порожню відповідь (204 No Content)
+    const data: unknown = text.length > 0 ? this.parseJson(text, path) : null
+
+    // ── Розпізнавання протухлого токена ─────────────────────────────
+    const isTokenExpired =
+      response.status === HttpStatus.UNAUTHORIZED ||
+      (data as any)?.message === EdboService.DENIED_MESSAGE
+
+    if (isTokenExpired && !isRetry) {
+      this.logger.warn('ЄДЕБО токен протух — оновлення і повтор запиту')
+      this.invalidateToken()
+      return this.doPost<T>(path, body, true)
+    }
+
+    if (!response.ok) {
+      const errorBody = data as EdboErrorResponse
+      this.logger.error(
+        `ЄДЕБО API error ${response.status} on ${path}`,
+        JSON.stringify(errorBody),
+      )
+      throw new HttpException(errorBody, response.status)
+    }
+
+    return data as T
   }
 
-  if (!response.ok) {
-    const errorBody = data as EdboErrorResponse;
-    this.logger.error(
-      `ЄДЕБО API error ${response.status} on ${path}`,
-      JSON.stringify(errorBody),
-    );
-    throw new HttpException(errorBody, response.status);
+  /**
+   * Безпечний JSON.parse з інформативною помилкою.
+   */
+  private parseJson(text: string, path: string): unknown {
+    try {
+      return JSON.parse(text)
+    } catch {
+      this.logger.error(
+        `ЄДЕБО повернув не-JSON для ${path}: ${text.slice(0, 200)}`
+      )
+      throw new HttpException(
+        `ЄДЕБО API повернув невалідний JSON для ${path}`,
+        HttpStatus.BAD_GATEWAY,
+      )
+    }
   }
-
-  return data as T;
-}
 }

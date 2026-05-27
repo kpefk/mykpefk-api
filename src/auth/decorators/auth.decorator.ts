@@ -7,13 +7,13 @@ import { RolesGuard } from '../guards/roles.guard'
 import { Roles } from './roles.decorator'
 
 /**
- * Декоратор для авторизації користувачів з певними ролями.
+ * Decorator for authorizing users with specific roles.
  *
- * Цей декоратор застосовує захист на основі ролей та аутентифікації.
- * Якщо вказані ролі, застосовується також декоратор Roles.
+ * This decorator applies role-based protection and authentication.
+ * If roles are specified, the Roles decorator is also applied.
  *
- * @param roles - Масив ролей, для яких потрібен доступ.
- * @returns Декоратори, що застосовуються до методу або класу.
+ * @param roles - Array of roles for which access is required.
+ * @returns decorators to be applied to the method or class.
  */
 export function Authorization(...roles: UserRole[]) {
 	if (roles.length > 0) {

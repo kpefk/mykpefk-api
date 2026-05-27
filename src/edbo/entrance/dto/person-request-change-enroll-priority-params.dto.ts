@@ -17,5 +17,5 @@ export class PersonRequestChangeEnrollPriorityParamsDto {
 
   @IsBoolean()
   @IsOptional()
-  isAutoIncEnrollPriority?: boolean;
+  isAutoIncEnrollPriority!: boolean;
 }

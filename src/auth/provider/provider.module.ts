@@ -8,15 +8,15 @@ import {
 import { ProviderService } from './provider.service'
 
 /**
- * Модуль для управління провайдерами OAuth.
+ * Module for managing OAuth providers.
  */
 @Module({})
 export class ProviderModule {
 	/**
-	 * Регистрація модуля провайдерів з синхронними опціями.
+	 * Registers the provider module with synchronous options.
 	 *
-	 * @param options - Опції провайдера, що містять базовий URL та сервіси.
-	 * @returns Динамічний модуль провайдерів.
+	 * @param options - Provider options containing the base URL and services.
+	 * @returns Dynamic provider module.
 	 */
 	public static register(options: TypeOptions): DynamicModule {
 		return {
@@ -33,10 +33,10 @@ export class ProviderModule {
 	}
 
 	/**
-	 * Регистрація модуля провайдерів з асинхронними опціями.
+	 * Registers the provider module with asynchronous options.
 	 *
-	 * @param options - Асинхронні опції провайдера, що містять імпорти та фабричні функції.
-	 * @returns Динамічний модуль провайдерів.
+	 * @param options - Asynchronous provider options containing imports and factory functions.
+	 * @returns Dynamic provider module.
 	 */
 	public static registerAsync(options: TypeAsyncOptions): DynamicModule {
 		return {

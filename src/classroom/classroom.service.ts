@@ -17,10 +17,10 @@ import { ClassroomPhoto } from './types/classroom-photo.type'
 const MAX_PHOTOS = 4
 
 /**
- * Парсить JSON-поле з Prisma у типізований масив фото.
- * Prisma повертає Json як JsonValue, тому потрібен double cast через unknown.
- * @param raw - Сире значення з Prisma.
- * @returns Типізований масив ClassroomPhoto.
+ * Parses the JSON field from Prisma into a typed array of photos.
+ * Prisma returns Json as JsonValue, so a double cast through unknown is required.
+ * @param raw - Raw value from Prisma.
+ * @returns Typed array of ClassroomPhoto.
  */
 function parsePhotos(raw: unknown): ClassroomPhoto[] {
   return (raw as ClassroomPhoto[]) ?? []
@@ -29,9 +29,9 @@ function parsePhotos(raw: unknown): ClassroomPhoto[] {
 @Injectable()
 export class ClassroomService {
   /**
-   * Конструктор сервісу кабінетів.
-   * @param prismaService - Сервіс для роботи з базою даних Prisma.
-   * @param googleDriveService - Сервіс для роботи з Google Drive.
+   * Constructor of the classroom service.
+   * @param prismaService - Service for working with the Prisma database.
+   * @param googleDriveService - Service for working with Google Drive.
    */
   public constructor(
     private readonly prismaService: PrismaService,
@@ -41,11 +41,11 @@ export class ClassroomService {
   // ─── Допоміжні методи ────────────────────────────────────────────────────────
 
   /**
-   * Знаходить кабінет за ID.
-   * Використовується внутрішньо перед будь-якою операцією з кабінетом.
-   * @param id - ID кабінету.
-   * @returns Знайдений кабінет.
-   * @throws NotFoundException якщо кабінет не знайдено.
+   * Finds the classroom by ID.
+   * Used internally before any operation with the classroom.
+   * @param id - The ID of the classroom.
+   * @returns The found classroom.
+   * @throws NotFoundException if the classroom is not found.
    */
   public async findById(id: string) {
     const classroom = await this.prismaService.classroom.findUnique({
@@ -63,13 +63,13 @@ export class ClassroomService {
   }
 
   /**
-   * Перевіряє чи має поточний користувач право на редагування кабінету.
-   * Адміністратор має доступ до будь-якого кабінету.
-   * Викладач має доступ тільки до кабінету, завідувачем якого він є.
-   * @param classroomId - ID кабінету.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Знайдений кабінет (щоб не робити повторний запит до БД).
-   * @throws ForbiddenException якщо викладач не є завідувачем цього кабінету.
+   * Checks if the current user has the right to edit the classroom.
+   * The administrator has access to any classroom.
+   * The teacher has access only to the classroom of which he is the head.
+   * @param classroomId - The ID of the classroom.
+   * @param currentUser - The current authorized user.
+   * @returns The found classroom (to avoid making a second request to the database).
+   * @throws ForbiddenException if the teacher is not the head of this classroom.
    */
   private async checkEditAccess(
     classroomId: string,
@@ -94,11 +94,11 @@ export class ClassroomService {
     return classroom
   }
 
-  // ─── Основні CRUD операції ───────────────────────────────────────────────────
+  // ─── Main CRUD operations ───────────────────────────────────────────────────
 
   /**
-   * Повертає список усіх кабінетів, відсортованих за номером.
-   * @returns Список кабінетів із інформацією про завідувача.
+   * Returns a list of all classrooms, sorted by number.
+   * @returns A list of classrooms with information about the head of the department.
    */
   public async findAll() {
     return this.prismaService.classroom.findMany({
@@ -108,10 +108,10 @@ export class ClassroomService {
   }
 
   /**
-   * Створює новий кабінет (доступно тільки адміністратору).
-   * Список фото ініціалізується як порожній масив.
-   * @param dto - Дані для створення кабінету.
-   * @returns Створений кабінет.
+   * Creates a new classroom (available only to the administrator).
+   * The list of photos is initialized as an empty array.
+   * @param dto - Data for creating a classroom.
+   * @returns The created classroom.
    */
   public async create(dto: CreateClassroomDto) {
     return this.prismaService.classroom.create({
@@ -125,12 +125,12 @@ export class ClassroomService {
   }
 
   /**
-   * Оновлює основну інформацію кабінету.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param dto - Дані для оновлення кабінету.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет.
+   * Updates the main information of the classroom.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param dto - Data for updating the classroom.
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom.
    */
   public async update(
     id: string,
@@ -150,10 +150,10 @@ export class ClassroomService {
   }
 
   /**
-   * Видаляє кабінет разом із усіма його фото на Google Drive.
-   * Доступно тільки адміністратору.
-   * @param id - ID кабінету.
-   * @returns Видалений кабінет.
+   * Deletes the classroom along with all its photos from Google Drive.
+   * Available only to the administrator.
+   * @param id - The ID of the classroom.
+   * @returns The deleted classroom.
    */
   public async delete(id: string) {
     const classroom = await this.findById(id)
@@ -167,16 +167,16 @@ export class ClassroomService {
     return this.prismaService.classroom.delete({ where: { id } })
   }
 
-  // ─── Операції з фотографіями ─────────────────────────────────────────────────
+  // ─── Photo operations ─────────────────────────────────────────────────────────
 
   /**
-   * Завантажує нове фото кабінету на Google Drive та додає його до списку.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param file - Файл фото (multipart/form-data, поле "file").
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет із новим фото.
-   * @throws BadRequestException якщо вже досягнуто ліміт у 4 фото.
+   * Uploads a new photo of the classroom to Google Drive and adds it to the list.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param file - The photo file (multipart/form-data, field "file").
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom with the new photo.
+   * @throws BadRequestException if the limit of 4 photos has already been reached.
    */
   public async uploadPhoto(
     id: string,
@@ -206,14 +206,14 @@ export class ClassroomService {
   }
 
   /**
-   * Видаляє фото кабінету з Google Drive та зі списку фото.
-   * Після видалення перераховує порядок (order) фото що залишились.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param googleFileId - ID файлу на Google Drive.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет без видаленого фото.
-   * @throws NotFoundException якщо фото з таким googleFileId не знайдено.
+   * Deletes a classroom photo from Google Drive and from the photo list.
+   * After deletion, it recalculates the order of the remaining photos.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param googleFileId - The ID of the file on Google Drive.
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom without the deleted photo.
+   * @throws NotFoundException if a photo with such googleFileId is not found.
    */
   public async deletePhoto(
     id: string,
@@ -230,7 +230,7 @@ export class ClassroomService {
 
     await this.googleDriveService.deleteFile(googleFileId)
 
-    // Видаляємо фото і перераховуємо order для фото що залишились
+    // Remove photo and recalculate order for remaining photos
     const updatedPhotos: ClassroomPhoto[] = photos
       .filter(p => p.googleFileId !== googleFileId)
       .map((p, index) => ({ ...p, order: index }))
@@ -242,13 +242,13 @@ export class ClassroomService {
   }
 
   /**
-   * Змінює порядок фото кабінету після Drag & Drop на фронті.
-   * Фронт надсилає масив { googleFileId, order }[] із новим порядком.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param dto - Масив об'єктів із googleFileId та новим order для кожного фото.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет із новим порядком фото.
+   * Changes the order of classroom photos after Drag & Drop on the frontend.
+   * The frontend sends an array of { googleFileId, order }[] with the new order.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param dto - Array of objects with googleFileId and new order for each photo.
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom with the new photo order.
    */
   public async reorderPhotos(
     id: string,
@@ -258,7 +258,7 @@ export class ClassroomService {
     const classroom = await this.checkEditAccess(id, currentUser)
     const photos = parsePhotos(classroom.photos)
 
-    // Застосовуємо новий order до існуючих фото і сортуємо
+    // Apply new order to existing photos and sort
     const updatedPhotos: ClassroomPhoto[] = photos
       .map(photo => {
         const reordered = dto.photos.find(

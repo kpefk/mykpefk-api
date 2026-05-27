@@ -9,21 +9,21 @@ import { Request } from 'express'
 import { ProviderService } from '../provider/provider.service'
 
 /**
- * Guard для перевірки наявності провайдера аутентифікації.
+ * Guard for checking the existence of an authentication provider.
  */
 @Injectable()
 export class AuthProviderGuard implements CanActivate {
 	/**
-	 * Конструктор охоронника провайдера аутентифікації.
+	 * Constructor of the provider authentication guard.
 	 * @param providerService - Сервіс для роботи з провайдерами аутентифікації.
 	 */
 	public constructor(private readonly providerService: ProviderService) {}
 
 	/**
-	 * Перевіряє, чи існує вказаний провайдер аутентифікації.
-	 * @param context - Контекст виконання, що містить інформацію про поточний запит.
-	 * @returns true, якщо провайдер знайдений; в противному випадку викидає NotFoundException.
-	 * @throws NotFoundException - Якщо провайдер не знайдений.
+	 * Checks if the specified authentication provider exists.
+	 * @param context - Execution context containing information about the current request.
+	 * @returns true if the provider is found; otherwise throws NotFoundException.
+	 * @throws NotFoundException if the provider is not found.
 	 */
   public canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>()

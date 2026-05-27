@@ -8,17 +8,17 @@ import { TempPasswordTemplate } from './templates/temp-password.template'
 import { TwoFactorAuthTemplate } from './templates/two-factor-auth.template'
 
 /**
- * Сервіс для відправки Email-повідомлень.
+ * Service for sending email notifications.
  *
- * Цей сервіс надає методи для відправки різних типів email-повідомлень,
- * включаючи підтвердження пошти, скидання пароля та двофакторну аутентифікацію.
+ * This service provides methods for sending different types of email notifications,
+ * including mail confirmation, password reset, and two-factor authentication.
  */
 @Injectable()
 export class MailService {
 	/**
-	 * Конструктор сервісу пошти.
-	 * @param mailerService - Сервіс для роботи з відправкою email.
-	 * @param configService - Сервіс для роботи з конфігурацією додатку.
+	 * Constructor of the mail service.
+	 * @param mailerService - Service for working with email sending.
+	 * @param configService - Service for working with application configuration.
 	 */
 	public constructor(
 		private readonly mailerService: MailerService,
@@ -26,10 +26,10 @@ export class MailService {
 	) { }
 
 	/**
-	 * Відправляє email для скидання пароля.
-	 * @param email - Адреса електронної пошти одержувача.
-	 * @param token - Токен для скидання пароля.
-	 * @returns Проміс, який дозволяється при успішній відправці.
+	 * Sends an email for password reset.
+	 * @param email - The email address of the recipient.
+	 * @param token - The token for password reset.
+	 * @returns A promise that resolves when the email is successfully sent.
 	 */
 	public async sendPasswordResetEmail(email: string, token: string) {
 		const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
@@ -39,10 +39,10 @@ export class MailService {
 	}
 
 	/**
-	 * Відправляє email з токеном двофакторної аутентифікації.
-	 * @param email - Адреса електронної пошти одержувача.
-	 * @param token - Токен двофакторної аутентифікації.
-	 * @returns Проміс, який дозволяється при успішній відправці.
+	 * Sends an email with a two-factor authentication token.
+	 * @param email - The email address of the recipient.
+	 * @param token - The two-factor authentication token.
+	 * @returns A promise that resolves when the email is successfully sent.
 	 */
 	public async sendTwoFactorTokenEmail(email: string, token: string) {
 		const html = await render(TwoFactorAuthTemplate({ token }))
@@ -51,11 +51,11 @@ export class MailService {
 	}
 
 	/**
-	 * Відправляє email-повідомлення.
-	 * @param email - Адреса електронної пошти одержувача.
-	 * @param subject - Тема email-повідомлення.
-	 * @param html - HTML-вміст email-повідомлення.
-	 * @returns Проміс, який дозволяється при успішній відправці.
+	 * Sends an email notification.
+	 * @param email - The email address of the recipient.
+	 * @param subject - The subject of the email notification.
+	 * @param html - The HTML content of the email notification.
+	 * @returns A promise that resolves when the email is successfully sent.
 	 */
 	private sendMail(email: string, subject: string, html: string) {
 		return this.mailerService.sendMail({
@@ -66,10 +66,10 @@ export class MailService {
 	}
 
 	/**
-	 * Відправляє email з тимчасовим паролем.
-	 * @param email - Адреса електронної пошти одержувача.
-	 * @param password - Тимчасовий пароль.
-	 * @returns Проміс, який дозволяється при успішній відправці.
+	 * Sends an email with a temporary password.
+	 * @param email - The email address of the recipient.
+	 * @param password - The temporary password.
+	 * @returns A promise that resolves when the email is successfully sent.
 	 */
 	public async sendTempPassword(email: string, password: string) {
 		const html = await render(TempPasswordTemplate({ password }))

@@ -70,6 +70,8 @@ mykpefk-server/
 │   │   ├── provider/       # Google OAuth
 │   │   └── two-factor-auth/
 │   ├── classroom/          # Classroom module
+│   ├── student/            # 
+│   ├── staff/              # 
 │   ├── config/             # Configurations (mailer, recaptcha, providers)
 │   ├── edbo/               # EDBO integration
 │   │   ├── entrance/       # Admission campaign

@@ -15,9 +15,14 @@ import { GoogleDriveModule } from './libs/google-drive/google-drive.module'
 import { EdboModule } from './edbo/core/edbo.module';
 import redisConfig from '../redis.config'
 import { EntranceModule } from './edbo/entrance/entrance.module'
+import { StudentModule } from './student/student.module';
+import { StaffModule } from './staff/staff.module';
+import { EdboSyncModule } from './edbo/sync/edbo-sync.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
 	imports: [
+		ScheduleModule.forRoot(),
 		ConfigModule.forRoot({
 			ignoreEnvFile: !IS_DEV_ENV,
 			isGlobal: true,
@@ -34,7 +39,10 @@ import { EntranceModule } from './edbo/entrance/entrance.module'
 		ClassroomModule,
 		GoogleDriveModule,
 		EdboModule,
-		EntranceModule
+		EdboSyncModule,
+		EntranceModule,
+		StudentModule,
+		StaffModule
 	]
 })
 export class AppModule {}

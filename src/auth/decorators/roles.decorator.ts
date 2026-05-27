@@ -4,11 +4,11 @@ import { UserRole } from '@prisma/client'
 export const ROLES_KEY = 'roles'
 
 /**
- * Декоратор для встановлення метаданих ролей.
+ * Decorator for setting role metadata.
  *
- * Цей декоратор дозволяє вказати ролі, необхідні для доступу до методу або класу.
+ * This decorator allows you to specify roles required for access to a method or class.
  *
- * @param roles - Масив ролей, які повинні бути встановлені в метаданих.
- * @returns Функція SetMetadata, що встановлює ролі в метаданих.
+ * @param roles - Array of roles to be set in the metadata.
+ * @returns SetMetadata function that sets roles in the metadata.
  */
 export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles)

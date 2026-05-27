@@ -26,22 +26,21 @@ export class StudentEducationsService {
    *
    * `POST /api/studentEducations/add`
    *
-   * @param data - Параметри нової картки здобувача
-   * @param data.universityId - Код закладу освіти (**обов'язковий**)
-   * @param data.historyTypeId - Код статусу навчання (**обов'язковий**)
-   * @param data.dateBegin - Дата "Діє з" статусу навчання (**обов'язковий**)
-   * @param data.personId - Код фізичної особи (**обов'язковий**)
-   * @param data.educationDateBegin - Дата початку навчання (**обов'язковий**)
-   * @param data.educationDateEnd - Дата закінчення навчання (**обов'язковий**)
-   * @param data.qualificationGroupId - Код освітнього ступеня (**обов'язковий**)
-   * @param data.baseQualificationId - Код вступу на основі (**обов'язковий**)
-   * @param data.educationFormId - Код форми навчання (**обов'язковий**)
-   * @param data.paymentTypeId - Код джерела фінансування (**обов'язковий**)
-   * @param data.isShortTerm - Чи скорочений термін підготовки (**обов'язковий**)
-   * @param data.isSecondHigher - Здобуття освіти за іншою спеціальністю (**обов'язковий**)
-   * @param data.courseId - Код курсу (**обов'язковий**)
-   * @param data.documentEducationId - Код документу вступу (обов'язковий окрім статусу 25)
-   * @param data.konkursValue - Конкурсний бал при вступі (діапазон: 0–999999)
+   * @param universityId - Код закладу освіти (**обов'язковий**)
+   * @param historyTypeId - Код статусу навчання (**обов'язковий**)
+   * @param dateBegin - Дата "Діє з" статусу навчання (**обов'язковий**)
+   * @param personId - Код фізичної особи (**обов'язковий**)
+   * @param educationDateBegin - Дата початку навчання (**обов'язковий**)
+   * @param educationDateEnd - Дата закінчення навчання (**обов'язковий**)
+   * @param qualificationGroupId - Код освітнього ступеня (**обов'язковий**)
+   * @param baseQualificationId - Код вступу на основі (**обов'язковий**)
+   * @param educationFormId - Код форми навчання (**обов'язковий**)
+   * @param paymentTypeId - Код джерела фінансування (**обов'язковий**)
+   * @param isShortTerm - Чи скорочений термін підготовки (**обов'язковий**)
+   * @param isSecondHigher - Здобуття освіти за іншою спеціальністю (**обов'язковий**)
+   * @param courseId - Код курсу (**обов'язковий**)
+   * @param documentEducationId - Код документу вступу (обов'язковий окрім статусу 25)
+   * @param konkursValue - Конкурсний бал при вступі (діапазон: 0–999999)
    * @returns Код створеної картки та можливі попередження
    *
    * @example

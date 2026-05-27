@@ -12,14 +12,14 @@ import { ms, StringValue } from './libs/common/utils/ms.util'
 import { parseBoolean } from './libs/common/utils/parse-boolean.util'
 
 /**
- * Запускає додаток NestJS.
+ * Runs the NestJS application.
  *
- * Функція ініціалізує додаток, налаштовує проміжне ПЗ,
- * конфігурує управління сесіями і запускає сервер.
+ * The function initializes the application, configures middleware,
+ * configures session management and starts the server.
  *
  * @async
  * @function bootstrap
- * @returns {Promise<void>} Проміс, який дозволяє, коли додаток запущено.
+ * @returns {Promise<void>} A promise that resolves when the application is started.
  */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -44,13 +44,13 @@ async function bootstrap() {
     })
   )
 
-  // Глобальна серіалізація (@Exclude / @Expose на entity класах)
+  // Global serialization (@Exclude / @Expose on entity classes)
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
 
-  // Swagger документація
+  // Swagger documentation
   const swaggerConfig = new DocumentBuilder()
     .setTitle('MyKPEFK Backend')
-    .setDescription('API документація системи MyKPEFK')
+    .setDescription('API documentation for MyKPEFK system')
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -66,10 +66,10 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig)
 
-  // Документація доступна за /docs
+  // Documentation available at /docs
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
-      persistAuthorization: true // Зберігає токен між перезавантаженнями сторінки
+      persistAuthorization: true // Saves token between page reloads
     }
   })
 

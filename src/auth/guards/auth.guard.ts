@@ -8,21 +8,21 @@ import {
 import { UserService } from '@/user/user.service'
 
 /**
- * Guard для перевірки аутентифікації користувача.
+ * Guard for checking user authentication.
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
 	/**
-	 * Конструктор охоронника аутентифікації.
-	 * @param userService - Сервіс для роботи з користувачами.
+	 * Constructor of the authentication guard.
+	 * @param userService - Service for user operations.
 	 */
 	public constructor(private readonly userService: UserService) { }
 
 	/**
-	 * Перевіряє, чи має користувач доступ до ресурсу.
-	 * @param context - Контекст виконання, що містить інформацію про поточний запит.
-	 * @returns true, якщо користувач аутентифікований; в противному випадку викидає UnauthorizedException.
-	 * @throws UnauthorizedException - Якщо користувач не авторизований.
+	 * Checks if the user has access to the resource.
+	 * @param context - Execution context containing information about the current request.
+	 * @returns true, if the user is authenticated; otherwise throws UnauthorizedException.
+	 * @throws UnauthorizedException if the user is not authenticated.
 	 */
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request & {

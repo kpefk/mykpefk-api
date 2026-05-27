@@ -1,4 +1,4 @@
-// Визначення констант для різних одиниць часу
+// Constants for different time units
 const s = 1000
 const m = s * 60
 const h = m * 60
@@ -6,7 +6,7 @@ const d = h * 24
 const w = d * 7
 const y = d * 365.25
 
-// Тип для різних одиниць часу
+// Type for different time units
 type Unit =
 	| 'Years'
 	| 'Year'
@@ -40,42 +40,41 @@ type Unit =
 	| 'Msec'
 	| 'Ms'
 
-// Тип для одиниць часу в будь-якому регістрі
+// Type for time units in any case
 type UnitAnyCase = Unit | Uppercase<Unit> | Lowercase<Unit>
 
-// Тип для строкового значення, яке може містити число і необов'язкову одиницю часу
+// Type for string value that can contain a number and an optional time unit
 export type StringValue =
 	| `${number}`
 	| `${number}${UnitAnyCase}`
 	| `${number} ${UnitAnyCase}`
 
 /**
- * Перетворює строкове значення, що представляє час, в мілісекунди.
+ * Converts a string value representing time to milliseconds.
  *
- * @param str - Рядок, що представляє кількість часу, наприклад, "1 hour", "60s", "500 milliseconds".
- * @returns Кількість мілісекунд, що відповідає вказаному часу.
- * @throws {Error} Якщо рядок не відповідає очікуваному формату або якщо одиниця часу не розпізнана.
+ * @param str - String representing the amount of time, e.g., "1 hour", "60s", "500 milliseconds".
+ * @returns The number of milliseconds corresponding to the specified time.
+ * @throws {Error} If the string does not match the expected format or if the time unit is not recognized.
  *
  * @example
- * ms('1 minute'); // поверне 60000
- * ms('2 hours'); // поверне 7200000
- * ms('500 ms'); // поверне 500
+ * ms('1 minute'); // returns 60000
+ * ms('2 hours'); // returns 7200000
+ * ms('500 ms'); // returns 500
  */
 export function ms(str: StringValue): number {
-	// Перевірка вхідних даних
 	if (typeof str !== 'string' || str.length === 0 || str.length > 100) {
 		throw new Error(
 			'Значення, надане ms() має бути рядком довжиною від 1 до 99.'
 		)
 	}
 
-	// Регулярний вираз для співставлення рядка з числом і необов'язковою одиницею часу
+	// Regular expression for matching a string with a number and an optional time unit
 	const match =
 		/^(?<value>-?(?:\d+)?\.?\d+) *(?<type>milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
 			str
 		)
 
-	// Вилучення значення та типу з співпадіння
+	// Extracting value and type from match
 	const groups = match?.groups as { value: string; type?: string } | undefined
 	if (!groups) {
 		return NaN
@@ -83,7 +82,7 @@ export function ms(str: StringValue): number {
 	const n = parseFloat(groups.value)
 	const type = (groups.type || 'ms').toLowerCase() as Lowercase<Unit>
 
-	// Перетворення строкового значення в мілісекунди в залежності від одиниці часу
+	// Converting string value to milliseconds depending on the time unit
 	switch (type) {
 		case 'years':
 		case 'year':

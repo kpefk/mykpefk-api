@@ -14,23 +14,23 @@ import { PasswordRecoveryService } from './password-recovery.service'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 /**
- * Контролер для управління відновленням паролю.
+ * Controller for managing password recovery.
  */
 @ApiTags('Відновлення паролю')
 @Controller('auth/password-recovery')
 export class PasswordRecoveryController {
   /**
-   * Конструктор контролера відновлення паролю.
-   * @param passwordRecoveryService - Сервіс для управління відновленням паролю.
+   * Constructor of the password recovery controller.
+   * @param passwordRecoveryService - The password recovery service.
    */
   public constructor(
     private readonly passwordRecoveryService: PasswordRecoveryService
   ) {}
 
   /**
-   * Запрошує скидання пароля та відправляє токен на вказаний Email.
-   * @param dto - DTO з адресом електронної пошти користувача.
-   * @returns true, якщо токен успішно відправлено.
+   * Requests password reset and sends a token to the specified email.
+   * @param dto - DTO containing the user's email address.
+   * @returns true, if the token was sent successfully.
    */
   @ApiOperation({ summary: 'Запит на скидання паролю' })
   @ApiResponse({ status: 200, description: 'Токен успішно відправлено' })

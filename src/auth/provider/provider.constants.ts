@@ -2,14 +2,14 @@ import { FactoryProvider, ModuleMetadata } from '@nestjs/common'
 import { BaseOAuthService } from './services/base-oauth.service'
 
 /**
- * Символ для ідентифікації опцій провайдера.
+ * Symbol for identifying provider options.
  */
 export const ProviderOptionsSymbol = Symbol('ProviderOptions')
 
 /**
- * Тип для опцій провайдера.
+ * Type for provider options.
  *
- * Цей тип описує базовий URL та масив сервісів OAuth.
+ * This type describes the base URL and an array of OAuth services.
  */
 export type TypeOptions = {
 	baseUrl: string
@@ -17,9 +17,9 @@ export type TypeOptions = {
 }
 
 /**
- * Тип для асинхронних опцій провайдера.
+ * Type for asynchronous provider options.
  *
- * Цей тип описує асинхронні опції, що містять імпорти та фабричні функції.
+ * This type describes asynchronous options that contain imports and factory functions.
  */
 export type TypeAsyncOptions = Pick<ModuleMetadata, 'imports'> &
 	Pick<FactoryProvider<TypeOptions>, 'useFactory' | 'inject'>

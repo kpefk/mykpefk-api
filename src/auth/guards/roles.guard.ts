@@ -10,21 +10,21 @@ import { UserRole } from '@prisma/client'
 import { ROLES_KEY } from '../decorators/roles.decorator'
 
 /**
- * Guard для перевірки ролей користувача.
+ * Guard for checking user roles.
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
 	/**
-	 * Конструктор охоронника ролей.
-	 * @param reflector - Рефлектор для отримання метаданих.
+	 * Constructor of the roles guard.
+	 * @param reflector - Reflector for getting metadata.
 	 */
 	public constructor(private readonly reflector: Reflector) { }
 
 	/**
-	 * Перевіряє, чи має користувач необхідні ролі для доступу до ресурсу.
-	 * @param context - Контекст виконання, що містить інформацію про поточний запит.
-	 * @returns true, якщо у користувача достатні права; в противному випадку викидає ForbiddenException.
-	 * @throws ForbiddenException - Якщо у користувача недостатні права.
+	 * Checks if the user has the required roles to access the resource.
+	 * @param context - Execution context containing information about the current request.
+	 * @returns true if the user has sufficient rights; otherwise throws ForbiddenException.
+	 * @throws ForbiddenException if the user does not have sufficient rights.
 	 */
 	public async canActivate(context: ExecutionContext): Promise<boolean> {
 		const roles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [

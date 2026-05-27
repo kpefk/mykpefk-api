@@ -6,7 +6,7 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Model for user authorization in the MyKPEFK system
+/// Model for user authorization in the My KPEFK system
 model User {
   id String @id @default(uuid())
 
@@ -15,15 +15,15 @@ model User {
   role     UserRole @default(STUDENT)
 
   isTwoFactorEnabled Boolean @default(false) @map("is_two_factor_enabled")
-  isFirstLogin       Boolean @default(true) @map("is_first_login")
-  isActive           Boolean @default(true) @map("is_active")
+  isFirstLogin       Boolean @default(true)  @map("is_first_login")
+  isActive           Boolean @default(true)  @map("is_active")
 
   tokens  Token[]
   student Student?
   teacher Teacher?
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
 
   @@map("users")
 }
@@ -44,20 +44,20 @@ model Token {
   @@map("tokens")
 }
 
-/// List of user roles in the MyKPEFK system
+/// List of user roles in the My KPEFK system
 enum UserRole {
-  STUDENT // Student
-  TEACHER // Teacher
-  SCHEDULE_DISPATCHER // Schedule dispatcher
-  HEAD_OF_DEPARTMENT // Head of department
-  DEPUTY_DIRECTOR // Deputy director
-  DIRECTOR // Director
-  ADMINISTRATOR // Administrator
+  STUDENT             // Студент
+  TEACHER             // Викладач
+  SCHEDULE_DISPATCHER // Диспетчер розкладу
+  HEAD_OF_DEPARTMENT  // Завідувач відділення
+  DEPUTY_DIRECTOR     // Заступник директора
+  DIRECTOR            // Директор
+  ADMINISTRATOR       // Адміністратор
 }
 
 /// Model for token types
 enum TokenType {
-  TWO_FACTOR // Two-factor authentication
+  TWO_FACTOR     // Two-factor authentication
   PASSWORD_RESET // Password reset
 }
 
@@ -65,24 +65,133 @@ enum TokenType {
 model Student {
   id String @id @default(uuid())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique @map("user_id")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  universityId Int // Код закладу в ЄДЕБО
+  personId     Int // Код картки фіз. особи в ЄДЕБО
+  listenerId   Int // Код картки слухача в ЄДЕБО
+
+  // Персональні дані
+  lastName      String   @map("last_name")   // Прізвище
+  firstName     String   @map("first_name")  // Власне ім'я
+  middleName    String   @map("middle_name") // По батькові
+  birthday      DateTime                      // Дата народження
+  countryName   String   @map("country_name") // Громадянство
+  personSexName String   @map("person_sex_name") // Стать
+  rnokpp        String   // РНОКПП
+  unzr          String   // УНЗР
+
+  // Документ, що посвідчує особу
+  passportDocumentTypeId      Int      @map("passport_document_type_id")      // тип (Id)
+  passportDocumentTypeName    String   @map("passport_document_type_name")    // тип (Назва)
+  passportDocumentSeries      String   @map("passport_document_series")       // серія
+  passportDocumentNumbers     String   @map("passport_document_numbers")      // номер
+  passportDocumentIssuedDate  DateTime @map("passport_document_issued_date")  // дата видачі
+  passportDocumentExpiredDate DateTime @map("passport_document_expired_date") // термін дії
+
+  // Професії (до 5)
+  professionClassifierCode1 String @map("profession_classifier_code_1") // Код професії 1
+  professionName1           String @map("profession_name_1")            // Назва професії 1
+  professionRangName1       String @map("profession_rang_name_1")       // Розряд 1
+  professionClassifierCode2 String @map("profession_classifier_code_2") // Код професії 2
+  professionName2           String @map("profession_name_2")            // Назва професії 2
+  professionRangName2       String @map("profession_rang_name_2")       // Розряд 2
+  professionClassifierCode3 String @map("profession_classifier_code_3") // Код професії 3
+  professionName3           String @map("profession_name_3")            // Назва професії 3
+  professionRangName3       String @map("profession_rang_name_3")       // Розряд 3
+  professionClassifierCode4 String @map("profession_classifier_code_4") // Код професії 4
+  professionName4           String @map("profession_name_4")            // Назва професії 4
+  professionRangName4       String @map("profession_rang_name_4")       // Розряд 4
+  professionClassifierCode5 String @map("profession_classifier_code_5") // Код професії 5
+  professionName5           String @map("profession_name_5")            // Назва професії 5
+  professionRangName5       String @map("profession_rang_name_5")       // Розряд 5
+
+  // Навчання
+  educationFormName  String   @map("education_form_name")  // Форма навчання
+  isDual             Boolean  @map("is_dual")              // Чи дуальна форма навчання
+  educationDateBegin DateTime @map("education_date_begin") // Початок навчання (дата)
+  reason             String                                // Початок навчання (наказ / підстава)
+  educationDateEnd   DateTime @map("education_date_end")   // Закінчення навчання (дата)
+
+  // Службові поля
+  createdAt  DateTime @default(now()) @map("created_at")
+  modifyDate DateTime @updatedAt      @map("modify_date") // Дата останнього редагування
 
   @@map("students")
 }
 
-/// Model for detailed teacher information
+/// Model for detailed teacher information (ЄДЕБО API: staff/listExternal)
 model Teacher {
   id String @id @default(uuid())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique @map("user_id")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  universityId Int @map("university_id") // Код закладу в ЄДЕБО
+  personId     Int @map("person_id")     // Код картки фіз. особи в ЄДЕБО
+  staffId      Int @unique @map("staff_id") // Код картки працівника в ЄДЕБО
+
+  // Персональні дані
+  lastName      String   @map("last_name")       // Прізвище
+  firstName     String   @map("first_name")      // Власне ім'я
+  middleName    String?  @map("middle_name")     // По батькові
+  birthday      DateTime                          // Дата народження
+  countryId     Int?     @map("country_id")      // Країна громадянства (Id)
+  countryName   String?  @map("country_name")    // Країна громадянства (Назва)
+  personSexName String?  @map("person_sex_name") // Стать
+  rnokpp        String?                           // РНОКПП
+  unzr          String?                           // УНЗР
+
+  // Документ, що посвідчує особу
+  passportDocumentTypeId      Int?      @map("passport_document_type_id")      // тип (Id)
+  passportDocumentTypeName    String?   @map("passport_document_type_name")    // тип (Назва)
+  passportDocumentSeries      String?   @map("passport_document_series")       // серія
+  passportDocumentNumbers     String?   @map("passport_document_numbers")      // номер
+  passportDocumentDateGet     DateTime? @map("passport_document_date_get")     // дата видачі
+  passportDocumentExpiredDate DateTime? @map("passport_document_expired_date") // термін дії
+
+  // Посада та зайнятість
+  isActive              Boolean @default(true) @map("is_active")             // Працює (так/ні)
+  positionName          String? @map("position_name")                        // Посада
+  positionPluralityName String? @map("position_plurality_name")              // Трудовий статус
+  positionPlace         String? @map("position_place")                       // Місце основної роботи
+
+  // Факультет
+  universityFacultyId        Int?    @map("university_faculty_id")         // Факультет (Id)
+  universityFacultyFullName  String? @map("university_faculty_full_name")  // Факультет (назва)
+  universityFacultyShortName String? @map("university_faculty_short_name") // Факультет (коротка назва)
+
+  // Кафедра
+  universityFacultyChairId        Int?    @map("university_faculty_chair_id")         // Кафедра (Id)
+  universityFacultyChairFullName  String? @map("university_faculty_chair_full_name")  // Кафедра (назва)
+  universityFacultyChairShortName String? @map("university_faculty_chair_short_name") // Кафедра (коротка назва)
+
+  // Кваліфікація
+  profession         String? // Професія
+  rang               String? // Розряд
+  pedagogicTitleId   String? @map("pedagogic_title_id")   // Педагогічне звання (Id, перелік через кому)
+  pedagogicTitleName String? @map("pedagogic_title_name") // Педагогічне звання (назва, перелік через кому)
+  skillId            Int?    @map("skill_id")             // Кваліфікаційна категорія (Id)
+  skillName          String? @map("skill_name")           // Кваліфікаційна категорія (назва)
+
+  // Стаж
+  stageTypeId   Int?      @map("stage_type_id")   // Тип стажу (Id)
+  stageTypeName String?   @map("stage_type_name") // Тип стажу (назва)
+  stage         Int?                               // Стаж (повних років)
+  isStageSolid  Boolean?  @map("is_stage_solid")  // Безперервний стаж
+  startDate     DateTime? @map("start_date")       // Дата початку стажу
+
+  // Дати роботи
+  dateRecruit DateTime? @map("date_recruit") // Початок роботи в закладі
+  dateFire    DateTime? @map("date_fire")    // Дата звільнення з закладу
+
+  // Підвищення кваліфікації
+  coursesInfo String? @map("courses_info") // Відомості про підвищення кваліфікації
+
+  // Службові поля
+  createdAt  DateTime @default(now()) @map("created_at")
+  modifyDate DateTime @updatedAt      @map("modify_date") // Дата останнього редагування
 
   classrooms Classroom[]
 
@@ -102,7 +211,7 @@ model Classroom {
   teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull) // The classroom should not disappear if the teacher is deleted
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
 
   @@map("classrooms")
 }

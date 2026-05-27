@@ -2,8 +2,8 @@ import 'express-session'
 
 declare module 'express-session' {
 	/**
-	 * Розширює стандартний інтерфейс SessionData, додаючи властивість userId.
-	 * Властивість userId буде доступна в об'єкті сесії.
+	 * Extends the standard SessionData interface by adding the userId property.
+	 * The userId property will be available in the session object.
 	 */
 	interface SessionData {
 		userId?: string

@@ -27,27 +27,27 @@ import { ReorderPhotosDto } from './dto/reorder-photos.dto'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 /**
- * Контролер для управління кабінетами.
+ * Controller for managing classrooms.
  */
 @ApiTags('Навчальні кабінети')
 @ApiBearerAuth('access-token')
 @Controller('classrooms')
 export class ClassroomController {
   /**
-   * Конструктор контролера кабінетів.
-   * @param classroomService - Сервіс для роботи з кабінетами.
+   * Constructor of the classroom controller.
+   * @param classroomService - Service for working with classrooms.
    */
   public constructor(private readonly classroomService: ClassroomService) {}
 
-  // ─── Основні CRUD операції ───────────────────────────────────────────────────
+  // ─── Basic CRUD operations ───────────────────────────────────────────────────
 
   /**
-   * Повертає список усіх кабінетів.
-   * Доступно всім авторизованим користувачам.
-   * @returns Список кабінетів із інформацією про завідувача.
+   * Returns a list of all classrooms.
+   * Available to all authorized users.
+   * @returns A list of classrooms with information about the head of the department.
    */
-  @ApiOperation({ summary: 'Отримати список усіх кабінетів' })
-  @ApiResponse({ status: 200, description: 'Список кабінетів' })
+  @ApiOperation({ summary: 'Get all classrooms' })
+  @ApiResponse({ status: 200, description: 'List of classrooms' })
   @Authorization()
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -56,12 +56,12 @@ export class ClassroomController {
   }
 
   /**
-   * Знаходить кабінет за ID.
-   * Доступно всім авторизованим користувачам.
-   * @param id - ID кабінету.
-   * @returns Знайдений кабінет із інформацією про завідувача.
+   * Finds a classroom by ID.
+   * Available to all authorized users.
+   * @param id - The ID of the classroom.
+   * @returns The found classroom with information about the head of the department.
    */
-  @ApiOperation({ summary: 'Знайти кабінет за ID' })
+  @ApiOperation({ summary: 'Find classroom by ID' })
   @ApiResponse({ status: 200, description: 'Знайдений кабінет' })
   @ApiResponse({ status: 404, description: 'Кабінет не знайдено' })
   @Authorization()
@@ -72,12 +72,12 @@ export class ClassroomController {
   }
 
   /**
-   * Створює новий кабінет.
-   * Доступно тільки адміністратору.
-   * @param dto - Дані для створення кабінету (номер, назва, ID завідувача).
-   * @returns Створений кабінет.
+   * Creates a new classroom.
+   * Available only to administrators.
+   * @param dto - Data for creating a classroom (number, name, ID of the head of the department).
+   * @returns The created classroom.
    */
-  @ApiOperation({ summary: 'Створити новий кабінет' })
+  @ApiOperation({ summary: 'Create a new classroom' })
   @ApiResponse({ status: 201, description: 'Створений кабінет' })
   @ApiResponse({ status: 400, description: 'Невірна капча' })
   @ApiResponse({ status: 403, description: 'Доступ заборонено' })
@@ -89,11 +89,11 @@ export class ClassroomController {
   }
 
   /**
-   * Оновлює основну інформацію кабінету.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param dto - Дані для оновлення (номер, назва, ID завідувача).
-   * @param currentUser - Поточний авторизований користувач.
+   * Updates the main information of the classroom.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param dto - Data for updating (number, name, ID of the head of the department).
+   * @param currentUser - The current authorized user.
    * @returns Оновлений кабінет.
    */
   @ApiOperation({ summary: 'Оновити кабінет за ID' })
@@ -113,10 +113,10 @@ export class ClassroomController {
   }
 
   /**
-   * Видаляє кабінет разом із усіма фото на Google Drive.
-   * Доступно тільки адміністратору.
-   * @param id - ID кабінету.
-   * @returns Видалений кабінет.
+   * Deletes the classroom along with all photos on Google Drive.
+   * Available only to administrators.
+   * @param id - The ID of the classroom.
+   * @returns The deleted classroom.
    */
   @ApiOperation({ summary: 'Видалити кабінет за ID' })
   @ApiResponse({ status: 200, description: 'Видалений кабінет' })
@@ -129,16 +129,16 @@ export class ClassroomController {
     return this.classroomService.delete(id)
   }
 
-  // ─── Операції з фотографіями ─────────────────────────────────────────────────
+  // ─── Operations with photos ─────────────────────────────────────────────────
 
   /**
-   * Завантажує нове фото кабінету на Google Drive.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * Максимальна кількість фото — 4.
-   * @param id - ID кабінету.
-   * @param file - Файл фото (multipart/form-data, поле "file").
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет із новим фото.
+   * Uploads a new photo of the classroom to Google Drive.
+   * Available to the administrator or the teacher who is the head of the department.
+   * Maximum number of photos — 4.
+   * @param id - The ID of the classroom.
+   * @param file - The photo file (multipart/form-data, field "file").
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom with the new photo.
    */
   @ApiOperation({ summary: 'Завантажити фото кабінету за ID' })
   @ApiResponse({ status: 200, description: 'Оновлений кабінет із новим фото' })
@@ -166,12 +166,12 @@ export class ClassroomController {
   }
 
   /**
-   * Видаляє фото кабінету з Google Drive.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param googleFileId - ID файлу на Google Drive.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет без видаленого фото.
+   * Deletes a classroom photo from Google Drive.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param googleFileId - The file ID on Google Drive.
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom without the deleted photo.
    */
   @ApiOperation({ summary: 'Видалити фото кабінету за ID' })
   @ApiResponse({ status: 200, description: 'Оновлений кабінет без видаленого фото' })
@@ -189,12 +189,12 @@ export class ClassroomController {
   }
 
   /**
-   * Змінює порядок фото кабінету після Drag & Drop на фронті.
-   * Доступно адміністратору або викладачу, який є завідувачем цього кабінету.
-   * @param id - ID кабінету.
-   * @param dto - Масив об'єктів із googleFileId та новим order для кожного фото.
-   * @param currentUser - Поточний авторизований користувач.
-   * @returns Оновлений кабінет із новим порядком фото.
+   * Changes the order of classroom photos after Drag & Drop on the frontend.
+   * Available to the administrator or the teacher who is the head of the department.
+   * @param id - The ID of the classroom.
+   * @param dto - An array of objects with googleFileId and the new order for each photo.
+   * @param currentUser - The current authorized user.
+   * @returns The updated classroom with the new photo order.
    */
   @ApiOperation({ summary: 'Змінити порядок фото кабінету за ID' })
   @ApiResponse({ status: 200, description: 'Оновлений кабінет із новим порядком фото' })
